@@ -3,13 +3,45 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-mv_path_0="/Volumes/Public Files/media3/MyFavMV"
-mv_path_1="/Volumes/Public Files/media3/AudioBooks/NewMV"
-mv_path_2="/Volumes/Public Files/media3/AudioBooks/群星.-《经典MV 888首》双音轨卡拉OK（原声.伴奏）经典歌曲_KTV_MTV_MV_首首经典_在家KTV首选_经典老歌"
+default_media_dirs=(
+  "/Volumes/Public Files/media3/MyFavMV"
+  "/Volumes/Public Files/media3/AudioBooks/NewMV"
+  "/Volumes/Public Files/media3/AudioBooks/群星.-《经典MV 888首》双音轨卡拉OK（原声.伴奏）经典歌曲_KTV_MTV_MV_首首经典_在家KTV首选_经典老歌"
+)
 
 out="$ROOT_DIR/media_filenames.txt"
 jing_file="$ROOT_DIR/靖菡老师.md"
 tbd_file="$ROOT_DIR/To be downloaded.md"
+
+usage() {
+  cat <<'EOF'
+Usage:
+  ./update_song_list.sh [MEDIA_DIR ...]
+
+Directory source priority:
+1) Positional args (if provided)
+2) MEDIA_DIRS env var (colon-separated)
+3) Built-in default paths
+
+Examples:
+  ./update_song_list.sh "/Volumes/Public Files/media3/MyFavMV"
+  MEDIA_DIRS="/dir1:/dir2" ./update_song_list.sh
+EOF
+}
+
+if [[ "${1:-}" == "-h" || "${1:-}" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+media_dirs=()
+if [[ "$#" -gt 0 ]]; then
+  media_dirs=("$@")
+elif [[ -n "${MEDIA_DIRS:-}" ]]; then
+  IFS=':' read -r -a media_dirs <<< "$MEDIA_DIRS"
+else
+  media_dirs=("${default_media_dirs[@]}")
+fi
 
 # Media extensions to include (case-insensitive)
 find_expr=(
@@ -21,26 +53,30 @@ find_expr=(
 
 # Step 1: build media_filenames.txt (without clobbering on missing mounts)
 tmp_out="$(mktemp)"
+: > "$tmp_out"
 found_dir=0
 
-for d in "$mv_path_0" "$mv_path_1" "$mv_path_2"; do
+for d in "${media_dirs[@]}"; do
+  [[ -n "${d// }" ]] || continue
   if [[ -d "$d" ]]; then
     found_dir=1
-    find "$d" "${find_expr[@]}"
+    while IFS= read -r -d '' f; do
+      basename "$f"
+    done < <(find "$d" "${find_expr[@]}") >> "$tmp_out"
   else
     echo "WARN: not a directory: $d" >&2
   fi
-done \
-| xargs -0 -n 1 basename \
-| LC_ALL=C sort -u > "$tmp_out"
+done
 
 if [[ "$found_dir" -eq 1 ]]; then
+  LC_ALL=C sort -u "$tmp_out" -o "$tmp_out"
   mv "$tmp_out" "$out"
   echo "Wrote $(wc -l < "$out") lines to $out"
 else
   rm -f "$tmp_out"
   if [[ -f "$out" ]]; then
     echo "WARN: no media directories available; keeping existing $out" >&2
+    echo "TIP: pass media dirs as args or set MEDIA_DIRS='/dir1:/dir2'" >&2
   else
     echo "WARN: no media directories and no existing $out; creating empty file" >&2
     : > "$out"
@@ -74,7 +110,7 @@ def norm(s: str) -> str:
     return PUNCT_RE.sub('', simp(s)).lower()
 
 def extract_title(text: str) -> str:
-    left = re.split(r'[（(]', text, 1)[0].strip()
+    left = re.split(r'[（(]', text, maxsplit=1)[0].strip()
     low = left.lower()
     if low.startswith('five hundred miles'):
         return 'Five Hundred Miles'
