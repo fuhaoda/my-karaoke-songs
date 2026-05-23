@@ -3,10 +3,13 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
+public_files_mount="/Volumes/Public Files"
+public_files_smb="smb://GUEST:@DRBOMBE-SUPER-SERVER._smb._tcp.local/Public%20Files"
+
 default_media_dirs=(
-  "/Volumes/Public Files/media3/MyFavMV"
-  "/Volumes/Public Files/media3/AudioBooks/NewMV"
-  "/Volumes/Public Files/media3/AudioBooks/群星.-《经典MV 888首》双音轨卡拉OK（原声.伴奏）经典歌曲_KTV_MTV_MV_首首经典_在家KTV首选_经典老歌"
+  "$public_files_mount/media3/MyFavMV"
+  "$public_files_mount/media3/AudioBooks/NewMV"
+  "$public_files_mount/media3/AudioBooks/群星.-《经典MV 888首》双音轨卡拉OK（原声.伴奏）经典歌曲_KTV_MTV_MV_首首经典_在家KTV首选_经典老歌"
 )
 
 out="$ROOT_DIR/media_filenames.txt"
@@ -22,6 +25,13 @@ Directory source priority:
 1) Positional args (if provided)
 2) MEDIA_DIRS env var (colon-separated)
 3) Built-in default paths
+
+Default media paths live under the DRBOMBE-SUPER-SERVER SMB share.
+macOS must have it mounted at:
+  /Volumes/Public Files
+
+SMB location:
+  smb://GUEST:@DRBOMBE-SUPER-SERVER._smb._tcp.local/Public%20Files
 
 Examples:
   ./update_song_list.sh "/Volumes/Public Files/media3/MyFavMV"
@@ -76,6 +86,9 @@ else
   rm -f "$tmp_out"
   if [[ -f "$out" ]]; then
     echo "WARN: no media directories available; keeping existing $out" >&2
+    if [[ ! -d "$public_files_mount" ]]; then
+      echo "TIP: mount DRBOMBE-SUPER-SERVER Public Files first: $public_files_smb" >&2
+    fi
     echo "TIP: pass media dirs as args or set MEDIA_DIRS='/dir1:/dir2'" >&2
   else
     echo "WARN: no media directories and no existing $out; creating empty file" >&2
