@@ -927,6 +927,7 @@ you raise me up Westfile.mkv
 亲爱的你啊 任素汐.mkv
 人世间 雷佳.mkv
 人间 王菲.mkv
+人间共鸣 李健.mkv
 人间半途 刘阳阳.mkv
 今天 刘德华.mkv
 今天是你的生日 殷秀梅.mkv
@@ -939,6 +940,7 @@ you raise me up Westfile.mkv
 何韵诗-痴情司.mkv
 你 屠洪刚.mkv
 你来了一阵子 王娜.mkv
+你的背包 陈奕迅.mkv
 保卫黄河 群星.mkv
 光明 汪峰.mkv
 关于二道桥 刀郎.mkv
@@ -993,6 +995,7 @@ you raise me up Westfile.mkv
 天之大 毛阿敏.mkv
 天仙配夫妻双双把家还 李玲玲叶矛.mkv
 天地龙鳞 王力宏 .mkv
+天天 陶喆.mkv
 天路 韩红.mkv
 女驸马民女名叫冯素珍 严凤英.mkv
 如愿 王菲.mkv
@@ -1009,9 +1012,11 @@ you raise me up Westfile.mkv
 小美满 周深.mkv
 小薇 黄品源.mkv
 小酒窝 林俊杰蔡卓林.mkv
+小镇姑娘 陶喆.mkv
 小龙人 贝乐虎.mkv
 少女时代-Gee.mkv
 少女时代-The Boys(English Ver.).mkv
+就是爱你 陶喆.mkv
 山丘 李宗盛.mkv
 平凡之路 朴树.mkv
 平凡日子里的挣扎 曾抖抖.mkv
@@ -1035,6 +1040,7 @@ you raise me up Westfile.mkv
 想你一次落一粒沙 大潞.mkv
 想你的夜 关喆.mkv
 想见你想见你想见你 八三夭.mkv
+我也不想这样 王菲.mkv
 我和我的祖国 李谷一.mkv
 我来人间一趟 魏佳艺.mkv
 我爱你中国 叶佩英.mkv
@@ -1045,6 +1051,7 @@ you raise me up Westfile.mkv
 戚薇-没收.mkv
 打猪草报花名 严凤英.mkv
 打靶归来 贾世骏.mkv
+找自己 陶喆.mkv
 投入的爱一次 毛阿敏.mkv
 披星戴月的想你 告五人.mkv
 拉着你的手 谢东.mkv
@@ -1058,12 +1065,14 @@ you raise me up Westfile.mkv
 星语心愿 大头针.mkv
 星语心愿 张柏芝.mkv
 春天的故事 董文华.mkv
+普通朋友 陶喆.mkv
 晴天 周杰伦.mkv
 智取威虎山打虎上山 杨子荣.mkv
 最亲的人 陆海涛.mkv
 最近比较烦 周华健李宗盛品冠.mkv
 最远的你最近的爱 阿斯根完玛三智.mkv
 月亮照山川 窝窝.mkv
+月满西楼 安雯.mkv
 有多少爱可以重来 迪克牛仔.mkv
 有风无风皆自由 王一佳.mkv
 望江亭独守空帐暗长叹 储兰兰.mkv
@@ -1090,6 +1099,7 @@ you raise me up Westfile.mkv
 泪海 许茹芸.mkv
 泳儿-快乐眼泪.mkv
 洪湖水浪打浪 王郡梅.mkv
+流沙 陶喆.mkv
 浮夸 陈奕迅.mkv
 消愁 毛不易.mkv
 清官谣 谢东.mkv
@@ -1101,6 +1111,8 @@ you raise me up Westfile.mkv
 灯火里的中国 张也周深.mkv
 烟雨唱扬州 李殊.mkv
 爱人错过 告五人.mkv
+爱很简单 陶喆.mkv
+爱情转移 陈奕迅.mkv
 爱的代价 张艾嘉.mkv
 爱的初体验 张震岳.mkv
 牧羊曲 郑绪岚.mkv
@@ -1121,9 +1133,11 @@ you raise me up Westfile.mkv
 相约1998 王菲那英.mkv
 真心英雄 成龙周华健李宗盛.mkv
 知否知否 郁可唯胡夏.mkv
+知足 梁静茹丁当.mkv
 离别的车站 赵薇.mkv
 稳稳的幸福 陈奕迅.mkv
 穆桂英挂帅 杨春霞.mkv
+穷开心 花儿乐队.mkv
 突然好想你 五月天.mkv
 突然的自我 伍佰.mkv
 童年老家 马健涛 .mkv
@@ -1157,10 +1171,12 @@ you raise me up Westfile.mkv
 蝴蝶 刘若英.mkv
 血染的风采 董文华.mkv
 袖手旁观 齐秦.mkv
+被风吹过的夏天 林俊杰金沙.mkv
 西海情歌 刀郎.mkv
 让我们荡起双浆 群星.mkv
 诺言 李翊君.mkv
 诺言 郭有才.mkv
+谢谢侬 陈奕迅.mkv
 贝加尔湖畔 李健.mkv
 走进新时代 张也.mkv
 辣妹子 宋祖英.mkv
@@ -1187,7 +1203,9 @@ you raise me up Westfile.mkv
 青藏高原 李娜.mkv
 风雨无阻 周华健.mkv
 飘洋过海来看你 刘明湘.mkv
+飞机场的1030 陶喆.mkv
 魏晨-Goodbye Goodbye.mkv
 魏晨-破晓.mkv
 鸿雁 呼斯楞.mkv
 黄鸿升-涩谷.mkv
+黑色柳丁 陶喆.mkv
