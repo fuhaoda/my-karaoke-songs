@@ -7,9 +7,10 @@ public_files_mount="/Volumes/Public Files"
 public_files_smb="smb://GUEST:@DRBOMBE-SUPER-SERVER._smb._tcp.local/Public%20Files"
 
 default_media_dirs=(
-  "$public_files_mount/media3/MyFavMV"
-  "$public_files_mount/media3/AudioBooks/NewMV"
-  "$public_files_mount/media3/AudioBooks/群星.-《经典MV 888首》双音轨卡拉OK（原声.伴奏）经典歌曲_KTV_MTV_MV_首首经典_在家KTV首选_经典老歌"
+  "$public_files_mount/media4/KTV/MyFavMV"
+  "$public_files_mount/media4/KTV/群星.-《经典MV 888首》双音轨卡拉OK（原声.伴奏）经典歌曲_KTV_MTV_MV_首首经典_在家KTV首选_经典老歌"
+  "$public_files_mount/media4/KTV/NewMV"
+  "$public_files_mount/media4/KTV/MTV精选1万首"
 )
 
 out="$ROOT_DIR/media_filenames.txt"
@@ -34,7 +35,7 @@ SMB location:
   smb://GUEST:@DRBOMBE-SUPER-SERVER._smb._tcp.local/Public%20Files
 
 Examples:
-  ./update_song_list.sh "/Volumes/Public Files/media3/MyFavMV"
+  ./update_song_list.sh "/Volumes/Public Files/media4/KTV/MyFavMV"
   MEDIA_DIRS="/dir1:/dir2" ./update_song_list.sh
 EOF
 }
@@ -53,48 +54,74 @@ else
   media_dirs=("${default_media_dirs[@]}")
 fi
 
-# Media extensions to include (case-insensitive)
-find_expr=(
-  -type f
-  ! -path '*/.*'
-  \( -iname "*.mp3" -o -iname "*.flac" -o -iname "*.m4a" -o -iname "*.wav" -o -iname "*.aac" -o -iname "*.ogg" -o -iname "*.wma" -o -iname "*.aiff" -o -iname "*.alac" -o -iname "*.mp4" -o -iname "*.mkv" -o -iname "*.avi" -o -iname "*.mov" -o -iname "*.webm" \)
-  -print0
-)
-
-# Step 1: build media_filenames.txt (without clobbering on missing mounts)
-tmp_out="$(mktemp)"
-: > "$tmp_out"
+# Step 1: build media_filenames.txt only after every directory scans successfully.
 found_dir=0
-
 for d in "${media_dirs[@]}"; do
   [[ -n "${d// }" ]] || continue
   if [[ -d "$d" ]]; then
     found_dir=1
-    while IFS= read -r -d '' f; do
-      basename "$f"
-    done < <(find "$d" "${find_expr[@]}") >> "$tmp_out"
   else
-    echo "WARN: not a directory: $d" >&2
-  fi
-done
-
-if [[ "$found_dir" -eq 1 ]]; then
-  LC_ALL=C sort -u "$tmp_out" -o "$tmp_out"
-  mv "$tmp_out" "$out"
-  echo "Wrote $(wc -l < "$out") lines to $out"
-else
-  rm -f "$tmp_out"
-  if [[ -f "$out" ]]; then
-    echo "WARN: no media directories available; keeping existing $out" >&2
+    echo "ERROR: not a directory: $d; keeping existing song lists" >&2
     if [[ ! -d "$public_files_mount" ]]; then
       echo "TIP: mount DRBOMBE-SUPER-SERVER Public Files first: $public_files_smb" >&2
     fi
-    echo "TIP: pass media dirs as args or set MEDIA_DIRS='/dir1:/dir2'" >&2
-  else
-    echo "WARN: no media directories and no existing $out; creating empty file" >&2
-    : > "$out"
+    exit 1
   fi
+done
+
+if [[ "$found_dir" -eq 0 ]]; then
+  echo "ERROR: no media directories provided; keeping existing song lists" >&2
+  echo "TIP: pass media dirs as args or set MEDIA_DIRS='/dir1:/dir2'" >&2
+  exit 1
 fi
+
+python3 - "$out" "${media_dirs[@]}" <<'PY'
+import os
+import sys
+import tempfile
+from pathlib import Path
+
+out = Path(sys.argv[1])
+extensions = {'.mp3', '.flac', '.m4a', '.wav', '.aac', '.ogg', '.wma',
+              '.aiff', '.alac', '.mp4', '.mkv', '.avi', '.mov', '.webm'}
+names = set()
+
+def scan(directory):
+    # scandir reuses directory-entry metadata, avoiding slow per-file SMB stats.
+    seen = set()
+    with os.scandir(directory) as entries:
+        for entry in entries:
+            if entry.name in seen:
+                raise OSError(f'duplicate directory entry in {directory}: {entry.name!r}')
+            seen.add(entry.name)
+            if entry.name.startswith('.'):
+                continue
+            if entry.is_dir(follow_symlinks=False):
+                scan(entry.path)
+            elif (Path(entry.name).suffix.lower() in extensions
+                  and entry.is_file(follow_symlinks=False)):
+                names.add(os.fsencode(entry.name))
+
+try:
+    for directory in sys.argv[2:]:
+        if directory.strip():
+            scan(directory)
+except OSError as exc:
+    raise SystemExit(f'ERROR: {exc}; keeping existing song lists')
+
+if any(b'\n' in name or b'\r' in name for name in names):
+    raise SystemExit('ERROR: a media filename contains a line break; keeping existing song lists')
+
+fd, temporary = tempfile.mkstemp(prefix='.media_filenames.', dir=out.parent)
+try:
+    with os.fdopen(fd, 'wb') as stream:
+        stream.write(b''.join(name + b'\n' for name in sorted(names)))
+    os.replace(temporary, out)
+finally:
+    if os.path.exists(temporary):
+        os.unlink(temporary)
+print(f'Wrote {len(names)} lines to {out}')
+PY
 
 # Step 2+3: update 靖菡老师.md and To be downloaded.md
 python3 - "$jing_file" "$tbd_file" "$out" <<'PY'
@@ -153,7 +180,16 @@ def parse_media_titles(lines):
             continue
         base = re.sub(r'\.[^.]+$', '', s)
         base = re.sub(r'^\d+[\-_\s]*', '', base)
-        if ' - ' in base:
+        # The large collection uses singer-title-language-category filenames.
+        parts = base.rsplit('-', 2)
+        if (len(parts) == 3
+                and parts[1].strip() in {'国语', '国', '粤语', '闽南', '英语', '韩语', '日语', '其它'}
+                and '-' in parts[0]):
+            left = parts[0].split('-', 1)[1].strip()
+            left = re.sub(r'\s*[（(](?:演|双语种|MTV|Remix)[）)]\s*$', '', left, flags=re.I)
+            titles.append(left)
+            continue
+        elif ' - ' in base:
             left = base.split(' - ', 1)[0].strip()
         elif '-' in base:
             left = base.split('-', 1)[0].strip()
@@ -164,16 +200,7 @@ def parse_media_titles(lines):
 
 def is_downloaded(title, media_keys):
     k = norm(title)
-    if not k:
-        return False
-    if k in media_keys:
-        return True
-    if len(k) < 4:
-        return False
-    for mk in media_keys:
-        if len(mk) >= 4 and (k in mk or mk in k):
-            return True
-    return False
+    return bool(k) and k in media_keys
 
 media_titles = parse_media_titles(media_path.read_text(encoding='utf-8').splitlines())
 media_keys = {norm(x) for x in media_titles if x}
