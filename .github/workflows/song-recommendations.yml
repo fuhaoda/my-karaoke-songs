@@ -1,0 +1,52 @@
+name: Collect song recommendations
+
+on:
+  issues:
+    types: [opened, edited, reopened, closed, deleted]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+
+concurrency:
+  group: song-recommendations
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - name: Check out trusted default branch
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 1
+
+      - name: Rebuild and save the current recommendation list
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            git fetch origin "$DEFAULT_BRANCH"
+            git reset --hard "origin/$DEFAULT_BRANCH"
+            python3 scripts/collect_recommendations.py
+            git add -- recommended_to_add.txt
+            if git diff --cached --quiet -- recommended_to_add.txt; then
+              echo 'Recommendation list is already current.'
+              exit 0
+            fi
+            git commit -m 'Update recommended songs'
+            if git push origin "HEAD:$DEFAULT_BRANCH"; then
+              exit 0
+            fi
+            echo "Branch changed during attempt $attempt; rebuilding from the latest issues."
+          done
+          echo 'Could not save recommendations after three attempts.' >&2
+          exit 1

@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#173f38" />
+    <meta
+      name="description"
+      content="查查 Haoda 的 Karaoke 收藏里有没有你想唱的歌。支持歌名、歌手和多关键字搜索。"
+    />
+    <title>Karaoke 歌库 · Haoda Fu</title>
+    <link rel="canonical" href="https://fuhaoda.github.io/karaoke/" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="./app.mjs"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#search">跳到歌曲搜索</a>
+    <div class="shell">
+      <header class="site-header">
+        <a class="brand" href="./" aria-label="Karaoke 歌库首页">
+          <span class="brand-icon" aria-hidden="true"
+            ><svg viewBox="0 0 24 24" fill="none">
+              <rect
+                x="8"
+                y="2"
+                width="8"
+                height="13"
+                rx="4"
+                stroke="currentColor"
+                stroke-width="1.6"
+              />
+              <path
+                d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+              /></svg
+          ></span>
+          <span>Karaoke <span class="brand-light">/ 歌库</span></span>
+        </a>
+        <nav aria-label="主导航">
+          <a href="https://fuhaoda.github.io/"
+            >Haoda 的主页 <span aria-hidden="true">↗</span></a
+          ><button class="nav-suggest" type="button" data-suggest>
+            建议添加 <span aria-hidden="true">＋</span>
+          </button>
+        </nav>
+      </header>
+
+      <main>
+        <section class="hero" aria-labelledby="page-title">
+          <div class="hero-copy">
+            <p class="eyebrow">
+              <span class="live-dot" aria-hidden="true"></span> HAODA’S PERSONAL
+              COLLECTION
+            </p>
+            <h1 id="page-title">
+              你想唱的，<br />这里有吗<span class="accent">？</span>
+            </h1>
+            <p class="intro">搜一搜歌名、歌手。找到喜欢的歌，下次一起唱。</p>
+            <p class="collection-status" id="collection-status" role="status">
+              正在打开歌库…
+            </p>
+          </div>
+          <div class="record-art" aria-hidden="true">
+            <div class="record-sleeve">
+              <span class="sleeve-top">THE GOOD TIMES</span
+              ><span class="sleeve-mark">K<span>♫</span></span
+              ><span class="sleeve-bottom">PRESS PLAY. SING ALONG.</span>
+            </div>
+            <div class="vinyl">
+              <div class="vinyl-label">
+                <span>Side A</span><strong>一起<br />开唱</strong><i></i>
+              </div>
+            </div>
+            <span class="record-note">A song for every gathering.</span>
+          </div>
+        </section>
+
+        <section class="search-panel" aria-label="搜索歌库">
+          <form id="search-form" role="search">
+            <label for="search" class="search-label">今天想唱哪一首？</label>
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <circle
+                  cx="10.8"
+                  cy="10.8"
+                  r="6.8"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                />
+                <path
+                  d="m16 16 4.5 4.5"
+                  stroke="currentColor"
+                  stroke-width="1.7"
+                  stroke-linecap="round"
+                /></svg
+              ><input
+                id="search"
+                type="search"
+                placeholder="歌名 / 歌手，例如：张学友 祝福"
+                autocomplete="off"
+                enterkeyhint="search"
+                aria-describedby="search-help"
+                maxlength="200"
+              /><button class="search-submit" type="submit">
+                找歌 <span aria-hidden="true">↗</span>
+              </button>
+            </div>
+            <div class="search-meta">
+              <p id="search-help">多个关键字用空格隔开，全部匹配。</p>
+              <button
+                type="button"
+                class="text-button"
+                id="clear-search"
+                hidden
+              >
+                清空搜索
+              </button>
+            </div>
+          </form>
+          <div class="examples" aria-label="试试这些搜索">
+            <span>试试</span
+            ><button type="button" data-query="周杰伦 稻香">周杰伦 稻香</button
+            ><button type="button" data-query="邓丽君">邓丽君</button
+            ><button type="button" data-query="Beyond">Beyond</button
+            ><button type="button" data-query="Five Hundred Miles">
+              Five Hundred Miles
+            </button>
+          </div>
+        </section>
+
+        <section
+          class="catalog-section"
+          aria-labelledby="results-heading"
+          aria-busy="true"
+          id="catalog-section"
+        >
+          <div class="results-toolbar">
+            <div>
+              <p class="eyebrow results-eyebrow" id="results-kicker">
+                THE COLLECTION
+              </p>
+              <h2 id="results-heading">随手翻翻歌库</h2>
+              <p
+                class="results-count"
+                id="results-count"
+                role="status"
+                aria-live="polite"
+              >
+                正在载入歌曲…
+              </p>
+            </div>
+            <div class="result-actions">
+              <label class="language-filter"
+                ><span class="sr-only">筛选语言</span
+                ><select id="language" aria-label="筛选语言">
+                  <option value="all">全部语言</option>
+                </select></label
+              ><button
+                type="button"
+                class="share-button"
+                id="share-search"
+                aria-label="复制本次搜索的分享链接"
+              >
+                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path
+                    d="m7.5 12.5 5-5M6.7 7.1 5.1 8.7a3.8 3.8 0 0 0 5.4 5.4l1.6-1.6m-4.2-5 1.6-1.6a3.8 3.8 0 0 1 5.4 5.4l-1.6 1.6"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                  /></svg
+                ><span>分享搜索</span>
+              </button>
+            </div>
+          </div>
+          <div class="source-notice" id="source-notice" hidden>
+            <span id="source-message"></span
+            ><button type="button" class="text-button" id="retry-load">
+              重新加载
+            </button>
+          </div>
+          <div class="result-list" id="results">
+            <div class="loading-row"></div>
+            <div class="loading-row"></div>
+            <div class="loading-row"></div>
+          </div>
+          <div class="empty-state" id="empty-state" hidden>
+            <span class="empty-icon" aria-hidden="true">♫</span>
+            <h3>这次还没找到</h3>
+            <p id="empty-message">换几个关键字试试，或把想唱的歌推荐给我。</p>
+            <p class="empty-hint" id="filter-hint" hidden>
+              也可以切换到“全部语言”，看看其他版本。
+            </p>
+            <button class="primary-button" type="button" data-suggest>
+              建议添加这首歌 <span aria-hidden="true">＋</span>
+            </button>
+          </div>
+          <div class="error-state" id="error-state" hidden>
+            <h3>歌库暂时没有打开</h3>
+            <p>请检查网络后重新加载。你也可以直接查看原始歌曲清单。</p>
+            <div>
+              <button type="button" class="primary-button" id="retry-error">
+                重新加载</button
+              ><a
+                href="https://github.com/fuhaoda/my-karaoke-songs/blob/main/media_filenames.txt"
+                target="_blank"
+                rel="noopener noreferrer"
+                >查看歌曲清单 ↗</a
+              >
+            </div>
+          </div>
+          <nav
+            class="pagination"
+            id="pagination"
+            aria-label="搜索结果分页"
+            hidden
+          >
+            <button type="button" id="previous-page">← 上一页</button
+            ><span id="page-status"></span
+            ><button type="button" id="next-page">下一页 →</button>
+          </nav>
+        </section>
+        <aside class="request-strip">
+          <div>
+            <span aria-hidden="true">✳</span>
+            <p>少了你想唱的那首？<br /><span>把它加入下次的愿望清单。</span></p>
+          </div>
+          <button type="button" class="text-button" data-suggest>
+            建议添加 <span aria-hidden="true">↗</span>
+          </button>
+        </aside>
+      </main>
+      <footer>
+        <p>Made for friends. Made for singing.</p>
+        <p>
+          <a
+            href="https://github.com/fuhaoda/my-karaoke-songs/blob/main/media_filenames.txt"
+            target="_blank"
+            rel="noopener noreferrer"
+            >原始歌曲清单</a
+          ><span aria-hidden="true"> · </span
+          ><a
+            href="https://github.com/fuhaoda/my-karaoke-songs/blob/main/recommended_to_add.txt"
+            target="_blank"
+            rel="noopener noreferrer"
+            >推荐清单</a
+          >
+        </p>
+        <small>这里只查询收藏中是否有这首歌，不提供在线播放或下载。</small>
+      </footer>
+    </div>
+
+    <dialog id="suggest-dialog" aria-labelledby="suggest-title">
+      <form id="suggest-form">
+        <div class="dialog-heading">
+          <p class="eyebrow">NEXT ON THE PLAYLIST</p>
+          <button
+            type="button"
+            class="close-dialog"
+            aria-label="关闭建议窗口"
+            id="close-suggest"
+          >
+            ×
+          </button>
+        </div>
+        <h2 id="suggest-title">把好歌，留到下次。</h2>
+        <p class="dialog-intro">告诉我你想唱什么。</p>
+        <label for="suggest-song">歌名 <span>必填</span></label
+        ><input
+          id="suggest-song"
+          name="song"
+          maxlength="120"
+          required
+          autocomplete="off"
+          placeholder="你想推荐的歌"
+        /><label for="suggest-artist">歌手 <span>选填</span></label
+        ><input
+          id="suggest-artist"
+          name="artist"
+          maxlength="120"
+          autocomplete="off"
+          placeholder="喜欢哪位歌手的版本？"
+        /><label for="suggest-note">想说的话 <span>选填</span></label
+        ><textarea
+          id="suggest-note"
+          name="note"
+          maxlength="300"
+          rows="2"
+          placeholder="例如：想要合唱版、演唱会版…"
+        ></textarea>
+        <p class="github-note">
+          下一步会打开
+          GitHub。登录并确认提交后，建议会自动汇总到推荐清单；提交内容公开可见。
+        </p>
+        <button class="primary-button dialog-submit" type="submit">
+          前往 GitHub 提交 <span aria-hidden="true">↗</span>
+        </button>
+      </form>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <noscript
+      ><p class="noscript">
+        搜索功能需要开启 JavaScript。你可以<a
+          href="https://github.com/fuhaoda/my-karaoke-songs/blob/main/media_filenames.txt"
+          >直接查看完整歌单</a
+        >。
+      </p></noscript
+    >
+  </body>
+</html>

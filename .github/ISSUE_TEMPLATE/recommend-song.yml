@@ -1,0 +1,28 @@
+name: 建议添加歌曲
+description: 没搜到想唱的歌？把歌名告诉我。
+title: "[歌曲推荐] "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        谢谢推荐！提交后，这条建议会公开显示，并自动汇总到待添加歌单。
+        歌曲加入歌库后，就可以在搜索页找到了。
+  - type: input
+    id: song
+    attributes:
+      label: 歌名
+      placeholder: 例如：花开忘忧
+      description: 最多 120 字；一条建议填写一首歌。
+    validations:
+      required: true
+  - type: input
+    id: artist
+    attributes:
+      label: 演唱者
+      placeholder: 例如：周深（不知道可以留空）
+      description: 最多 120 字。
+  - type: textarea
+    id: note
+    attributes:
+      label: 备注
+      placeholder: 可以补充语言或想要的演唱版本（选填）

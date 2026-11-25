@@ -1,3 +1,26 @@
+## Karaoke 搜索网页
+
+公开搜索：[https://fuhaoda.github.io/karaoke/](https://fuhaoda.github.io/karaoke/)
+
+输入歌名、歌手或多个关键字（空格、逗号、顿号、分号、加号分隔），结果需要同时匹配所有关键字。可以筛选语言、查看原始文件名、复制歌名，以及分享带有搜索条件的链接。不同文件版本分别展示；未注明语言的文件归入“未标注”。搜索不需要登录。
+
+页面优先读取本仓库 `main` 分支的 `media_filenames.txt`，因此更新并推送清单后，网页会在重新加载时取得新数据。如果网络无法读取最新清单，会使用随站点发布的备份，并明确提示。
+
+“建议添加”会打开预填好的 GitHub 歌曲推荐表单，朋友需要登录 GitHub 并确认提交。GitHub Actions 会将有效且仍打开的推荐汇总到 `recommended_to_add.txt`，按歌名和演唱者去重。关闭或删除推荐会在下一次同步时从文件中移除，重新打开会恢复。该文件由推荐 Issues 自动生成，手动修改会被下一次同步替换。建议内容公开可见。
+
+源码在 `web/`。生成静态发布文件并本地预览：
+
+```bash
+python3 scripts/prepare_site.py
+python3 -m http.server 8000 --directory dist
+```
+
+打开 `http://localhost:8000/`。GitHub Pages 的发布位置为 `fuhaoda.github.io` 仓库的 `karaoke/` 目录；用 `python3 scripts/prepare_site.py --output /path/to/fuhaoda.github.io/karaoke` 更新发布文件。首页入口位于该仓库的 `index.html`。
+
+验证：`node --test tests/catalog.test.mjs`、`python3 -m unittest discover -s tests -p 'test_*.py'`。推荐同步工作流是 **Collect song recommendations**，也可从 Actions 页面手动运行。
+
+---
+
 ## 01. 【锦书难寄 · 浓情时刻】
   > **意境**：从初见的羞涩到誓言的永恒，适合情侣对唱或深情告白。  
 **流程**：甜蜜破冰 → 对唱升温 → 深情告白 → 伤心爆发 → 温柔收尾  
